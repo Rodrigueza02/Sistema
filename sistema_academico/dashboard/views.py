@@ -70,10 +70,7 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         ).distinct()
 
         # Asistencia en sus materias
-        asistencias = Asistencia.objects.filter(materia__in=mis_materias)
-        total_asist = asistencias.count()
-        presentes   = asistencias.filter(presente=True).count()
-        pct_asist   = round((presentes / total_asist * 100), 1) if total_asist > 0 else 0
+        total_asistencias = Asistencia.objects.filter(materia__in=mis_materias).count()
 
         ctx['stats'] = [
             {
@@ -98,8 +95,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
                 'color': 'text-green-600',
             },
             {
-                'label': '% Asistencia',
-                'valor': f'{pct_asist}%',
+                'label': 'Asistencias registradas',
+                'valor': total_asistencias,
                 'icon':  'fas fa-calendar-check',
                 'bg':    'bg-yellow-100',
                 'color': 'text-yellow-600',

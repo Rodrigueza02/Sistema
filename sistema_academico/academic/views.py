@@ -134,6 +134,9 @@ class NotaListView(LoginRequiredMixin, ListView):
         qs = super().get_queryset().select_related('estudiante', 'materia', 'curso')
         if self.request.user.es_estudiante():
             qs = qs.filter(estudiante=self.request.user)
+        elif self.request.user.es_docente():
+            mis_materias = Materia.objects.filter(docente=self.request.user, activa=True)
+            qs = qs.filter(materia__in=mis_materias)
         q = self.request.GET.get('q', '').strip()
         if q:
             qs = qs.filter(
@@ -155,6 +158,11 @@ class NotaCreateView(DocenteOAdminMixin, CreateView):
     template_name = 'academic/nota_form.html'
     success_url   = reverse_lazy('nota-list')
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def form_valid(self, form):
         response = super().form_valid(form)  # guarda la nota una sola vez
         notificar_nota_email(self.object)    # self.object es la nota recién creada
@@ -167,6 +175,11 @@ class NotaUpdateView(DocenteOAdminMixin, UpdateView):
     form_class    = NotaForm
     template_name = 'academic/nota_form.html'
     success_url   = reverse_lazy('nota-list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         messages.success(self.request, 'Nota actualizada.')
@@ -196,6 +209,9 @@ class AsistenciaListView(LoginRequiredMixin, ListView):
         # Estudiante solo ve su propia asistencia
         if self.request.user.es_estudiante():
             qs = qs.filter(estudiante=self.request.user)
+        elif self.request.user.es_docente():
+            mis_materias = Materia.objects.filter(docente=self.request.user, activa=True)
+            qs = qs.filter(materia__in=mis_materias)
         q  = self.request.GET.get('q', '').strip()
         if q:
             qs = qs.filter(
@@ -216,6 +232,11 @@ class AsistenciaCreateView(DocenteOAdminMixin, CreateView):
     form_class    = AsistenciaForm
     template_name = 'academic/asistencia_form.html'
     success_url   = reverse_lazy('asistencia-list')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def form_valid(self, form):
         messages.success(self.request, 'Asistencia registrada.')

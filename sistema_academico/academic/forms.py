@@ -51,10 +51,35 @@ class NotaForm(forms.ModelForm):
         fields = ['estudiante', 'materia', 'curso', 'valor', 'tipo', 'observacion']
 
     def __init__(self, *args, **kwargs):
+        # Extraemos el usuario antes de llamar a super() para no pasarlo a ModelForm
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        # Solo estudiantes activos
-        self.fields['estudiante'].queryset = qs_estudiantes()
+
+        if self.user and self.user.es_docente():
+            # Solo las materias que dicta este docente
+            mis_materias = Materia.objects.filter(docente=self.user, activa=True)
+            self.fields['materia'].queryset = mis_materias
+
+            # Solo los cursos que contienen al menos una de sus materias
+            from .models import Curso as CursoModel
+            self.fields['curso'].queryset = CursoModel.objects.filter(
+                materias__in=mis_materias
+            ).distinct()
+
+            # Solo los estudiantes inscritos en esos cursos
+            from accounts.models import CustomUser as CU
+            estudiantes_ids = CursoModel.objects.filter(
+                materias__in=mis_materias
+            ).values_list('estudiantes', flat=True).distinct()
+            self.fields['estudiante'].queryset = CU.objects.filter(
+                pk__in=estudiantes_ids, activo=True
+            ).order_by('last_name', 'first_name')
+        else:
+            self.fields['estudiante'].queryset = qs_estudiantes()
+
         self.fields['estudiante'].empty_label = '— Seleccionar estudiante —'
+        self.fields['materia'].empty_label    = '— Seleccionar materia —'
+        self.fields['curso'].empty_label      = '— Seleccionar curso —'
         for f in self.fields.values():
             f.widget.attrs['class'] = CSS
 
@@ -74,10 +99,35 @@ class AsistenciaForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        # Extraemos el usuario antes de llamar a super() para no pasarlo a ModelForm
+        self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        # Solo estudiantes activos
-        self.fields['estudiante'].queryset = qs_estudiantes()
+
+        if self.user and self.user.es_docente():
+            # Solo las materias que dicta este docente
+            mis_materias = Materia.objects.filter(docente=self.user, activa=True)
+            self.fields['materia'].queryset = mis_materias
+
+            # Solo los cursos que contienen al menos una de sus materias
+            from .models import Curso as CursoModel
+            self.fields['curso'].queryset = CursoModel.objects.filter(
+                materias__in=mis_materias
+            ).distinct()
+
+            # Solo los estudiantes inscritos en esos cursos
+            from accounts.models import CustomUser as CU
+            estudiantes_ids = CursoModel.objects.filter(
+                materias__in=mis_materias
+            ).values_list('estudiantes', flat=True).distinct()
+            self.fields['estudiante'].queryset = CU.objects.filter(
+                pk__in=estudiantes_ids, activo=True
+            ).order_by('last_name', 'first_name')
+        else:
+            self.fields['estudiante'].queryset = qs_estudiantes()
+
         self.fields['estudiante'].empty_label = '— Seleccionar estudiante —'
+        self.fields['materia'].empty_label    = '— Seleccionar materia —'
+        self.fields['curso'].empty_label      = '— Seleccionar curso —'
         for name, field in self.fields.items():
             if name not in ('fecha', 'presente'):
                 field.widget.attrs['class'] = CSS

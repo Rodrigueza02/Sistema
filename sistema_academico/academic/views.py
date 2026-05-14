@@ -15,7 +15,7 @@ from .forms import MateriaForm, CursoForm, NotaForm, AsistenciaForm
 
 # ── Materias ──────────────────────────────────────────────────────────────────
 
-class MateriaListView(DocenteOAdminMixin, ListView):
+class MateriaListView(LoginRequiredMixin, ListView):
     model               = Materia
     template_name       = 'academic/materia_list.html'
     context_object_name = 'materias'
@@ -68,7 +68,7 @@ class MateriaDeleteView(SoloAdminMixin, DeleteView):
 
 # ── Cursos ────────────────────────────────────────────────────────────────────
 
-class CursoListView(DocenteOAdminMixin, ListView):
+class CursoListView(LoginRequiredMixin, ListView):
     model               = Curso
     template_name       = 'academic/curso_list.html'
     context_object_name = 'cursos'
@@ -76,6 +76,9 @@ class CursoListView(DocenteOAdminMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        # Estudiante solo ve los cursos en los que está inscrito
+        if self.request.user.es_estudiante():
+            qs = qs.filter(estudiantes=self.request.user)
         q  = self.request.GET.get('q', '').strip()
         if q:
             qs = qs.filter(Q(nombre__icontains=q) | Q(periodo__icontains=q))
@@ -182,7 +185,7 @@ class NotaDeleteView(SoloAdminMixin, DeleteView):
 
 # ── Asistencia ────────────────────────────────────────────────────────────────
 
-class AsistenciaListView(DocenteOAdminMixin, ListView):
+class AsistenciaListView(LoginRequiredMixin, ListView):
     model               = Asistencia
     template_name       = 'academic/asistencia_list.html'
     context_object_name = 'asistencias'
@@ -190,6 +193,9 @@ class AsistenciaListView(DocenteOAdminMixin, ListView):
 
     def get_queryset(self):
         qs = super().get_queryset().select_related('estudiante', 'materia', 'curso')
+        # Estudiante solo ve su propia asistencia
+        if self.request.user.es_estudiante():
+            qs = qs.filter(estudiante=self.request.user)
         q  = self.request.GET.get('q', '').strip()
         if q:
             qs = qs.filter(
@@ -218,7 +224,7 @@ class AsistenciaCreateView(DocenteOAdminMixin, CreateView):
 
 # ── Buscador global ───────────────────────────────────────────────────────────
 
-class BuscadorView(LoginRequiredMixin, ListView):
+class BuscadorView(DocenteOAdminMixin, ListView):
     template_name       = 'academic/buscar.html'
     context_object_name = 'estudiantes'
 

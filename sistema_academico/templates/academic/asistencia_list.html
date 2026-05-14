@@ -2,63 +2,80 @@
 {% block title %}Asistencia{% endblock %}
 {% block content %}
 
-<div class="flex items-center justify-between mb-6">
-  <h1 class="text-2xl font-bold text-gray-800">Registro de Asistencia</h1>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 fade-in">
+  <div>
+    <h1 class="text-xl md:text-2xl font-extrabold text-gray-800">Registro de Asistencia</h1>
+    <p class="text-sm text-gray-500 mt-0.5">{% if user.es_estudiante %}Tu historial de asistencia{% else %}Asistencia de todos los estudiantes{% endif %}</p>
+  </div>
+  {% if user.es_admin or user.es_docente %}
   <a href="{% url 'asistencia-create' %}"
-     class="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl hover:bg-primary-light transition-colors text-sm font-medium">
+     class="btn-anim inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-white text-sm font-bold shadow-card self-start sm:self-auto"
+     style="background:linear-gradient(135deg,#7C5CBF,#9B7FD4);">
     <i class="fas fa-plus"></i> Registrar
   </a>
+  {% endif %}
 </div>
 
-<!-- Buscador -->
-<form method="get" class="mb-5">
+{% if user.es_admin or user.es_docente %}
+<form method="get" class="mb-5 fade-in-2">
   <div class="relative max-w-sm">
-    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-purple-400 text-sm"></i>
     <input type="text" name="q" value="{{ query }}" placeholder="Buscar por estudiante o materia…"
-           class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm">
+           class="w-full pl-11 pr-4 py-3 rounded-2xl border-2 border-lavender bg-white text-sm font-semibold">
   </div>
 </form>
+{% endif %}
 
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-  <table class="w-full text-sm">
-    <thead class="bg-gray-50 text-gray-500 uppercase text-xs">
-      <tr>
-        <th class="px-5 py-3 text-left">Estudiante</th>
-        <th class="px-5 py-3 text-left">Materia</th>
-        <th class="px-5 py-3 text-left">Curso</th>
-        <th class="px-5 py-3 text-center">Fecha</th>
-        <th class="px-5 py-3 text-center">Estado</th>
-      </tr>
-    </thead>
-    <tbody class="divide-y divide-gray-100">
-      {% for a in asistencias %}
-      <tr class="hover:bg-gray-50 transition-colors">
-        <td class="px-5 py-3 font-medium text-gray-800">{{ a.estudiante.get_full_name }}</td>
-        <td class="px-5 py-3 text-gray-600">{{ a.materia.nombre }}</td>
-        <td class="px-5 py-3 text-gray-600">{{ a.curso.nombre }}</td>
-        <td class="px-5 py-3 text-center text-gray-500">{{ a.fecha }}</td>
-        <td class="px-5 py-3 text-center">
-          {% if a.presente %}
-            <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
-              <i class="fas fa-check mr-1"></i>Presente
-            </span>
-          {% else %}
-            <span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full font-medium">
-              <i class="fas fa-times mr-1"></i>Ausente
-            </span>
-          {% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="5" class="px-5 py-10 text-center text-gray-400">
-          <i class="fas fa-calendar-check text-3xl mb-2 block"></i>
-          No se encontraron registros de asistencia.
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<!-- Tabla (md+) -->
+<div class="bg-white rounded-3xl shadow-card overflow-hidden fade-in-3 hide-mobile">
+  <div class="table-wrap">
+    <table class="w-full text-sm min-w-[560px]">
+      <thead>
+        <tr style="background:linear-gradient(135deg,#EDE9FF,#E0D9FF);">
+          <th class="px-5 py-4 text-left text-xs font-extrabold text-purple-700 uppercase tracking-wider">Estudiante</th>
+          <th class="px-5 py-4 text-left text-xs font-extrabold text-purple-700 uppercase tracking-wider">Materia</th>
+          <th class="px-5 py-4 text-left text-xs font-extrabold text-purple-700 uppercase tracking-wider">Curso</th>
+          <th class="px-5 py-4 text-center text-xs font-extrabold text-purple-700 uppercase tracking-wider">Fecha</th>
+          <th class="px-5 py-4 text-center text-xs font-extrabold text-purple-700 uppercase tracking-wider">Estado</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-lavender">
+        {% for a in asistencias %}
+        <tr class="hover:bg-lavender/40 transition-colors">
+          <td class="px-5 py-3.5 font-bold text-gray-800">{{ a.estudiante.get_full_name }}</td>
+          <td class="px-5 py-3.5 text-gray-600 font-semibold">{{ a.materia.nombre }}</td>
+          <td class="px-5 py-3.5 text-gray-500 font-semibold">{{ a.curso.nombre }}</td>
+          <td class="px-5 py-3.5 text-center text-gray-500 font-semibold text-xs">{{ a.fecha }}</td>
+          <td class="px-5 py-3.5 text-center">
+            {% if a.presente %}<span class="inline-flex items-center gap-1.5 bg-mint text-green-700 text-xs px-3 py-1.5 rounded-2xl font-bold"><i class="fas fa-check text-[10px]"></i>Presente</span>
+            {% else %}<span class="inline-flex items-center gap-1.5 bg-red-50 text-red-600 text-xs px-3 py-1.5 rounded-2xl font-bold"><i class="fas fa-times text-[10px]"></i>Ausente</span>{% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-5 py-16 text-center text-gray-400"><i class="fas fa-calendar-check text-4xl mb-3 block"></i><p class="font-semibold">No se encontraron registros.</p></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Cards (móvil) -->
+<div class="space-y-3 show-mobile fade-in-3">
+  {% for a in asistencias %}
+  <div class="card-anim bg-white rounded-3xl shadow-card p-4 border border-lavender">
+    <div class="flex items-start justify-between">
+      <div>
+        <p class="font-extrabold text-gray-800">{{ a.estudiante.get_full_name }}</p>
+        <p class="text-sm text-gray-600 font-semibold">{{ a.materia.nombre }}</p>
+        <p class="text-xs text-gray-400 font-semibold">{{ a.curso.nombre }} · {{ a.fecha }}</p>
+      </div>
+      {% if a.presente %}<span class="inline-flex items-center gap-1 bg-mint text-green-700 text-xs px-3 py-1.5 rounded-2xl font-bold"><i class="fas fa-check text-[10px]"></i>Presente</span>
+      {% else %}<span class="inline-flex items-center gap-1 bg-red-50 text-red-600 text-xs px-3 py-1.5 rounded-2xl font-bold"><i class="fas fa-times text-[10px]"></i>Ausente</span>{% endif %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="text-center py-12 text-gray-400"><i class="fas fa-calendar-check text-4xl mb-3 block"></i><p class="font-semibold">No se encontraron registros.</p></div>
+  {% endfor %}
 </div>
 
 {% include 'partials/pagination.html' %}

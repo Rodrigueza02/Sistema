@@ -14,7 +14,22 @@ class Command(BaseCommand):
         password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'Admin2026*')
 
         if User.objects.filter(username=username).exists():
-            self.stdout.write(f'Superusuario "{username}" ya existe. Nada que hacer.')
+            # Asegurarse de que esté activo y con rol admin aunque ya exista
+            user = User.objects.get(username=username)
+            updated = False
+            if not user.activo:
+                user.activo = True
+                updated = True
+            if user.rol != 'admin':
+                user.rol = 'admin'
+                updated = True
+            if updated:
+                user.save()
+                self.stdout.write(self.style.SUCCESS(
+                    f'Superusuario "{username}" actualizado (activo=True, rol=admin).'
+                ))
+            else:
+                self.stdout.write(f'Superusuario "{username}" ya existe y está correcto.')
             return
 
         User.objects.create_superuser(
@@ -22,9 +37,10 @@ class Command(BaseCommand):
             email=email,
             password=password,
             rol='admin',
+            activo=True,
             first_name='Admin',
             last_name='SGA',
         )
-        self.stdout.write(
-            self.style.SUCCESS(f'Superusuario "{username}" creado exitosamente.')
-        )
+        self.stdout.write(self.style.SUCCESS(
+            f'Superusuario "{username}" creado. Usuario: {username} / Pass: {password}'
+        ))

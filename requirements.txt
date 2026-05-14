@@ -35,6 +35,9 @@ openpyxl>=3.1.0
 # Servidor WSGI para producción (Render/Railway)
 gunicorn>=21.2.0
 
+# Driver PostgreSQL para producción
+psycopg2-binary>=2.9.9
+
 # ============================================
 # NOTAS DE INSTALACIÓN:
 # ============================================

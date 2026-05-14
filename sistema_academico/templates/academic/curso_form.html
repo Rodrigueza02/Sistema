@@ -8,7 +8,7 @@
       <i class="fas fa-arrow-left"></i>
     </a>
     <h1 class="text-2xl font-bold text-gray-800">
-      {% if form.instance.pk %}Editar curso{% else %}Nuevo curso{% endif %}
+      {% if form.instance.pk %}Editar curso e inscribir estudiantes{% else %}Nuevo curso{% endif %}
     </h1>
   </div>
 
@@ -20,15 +20,29 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">
           {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
         </label>
-        {% if field.field.widget.input_type == 'checkbox' and field.name != 'materias' and field.name != 'estudiantes' %}
-          <div class="flex items-center gap-2">{{ field }}<span class="text-sm text-gray-600">{{ field.label }}</span></div>
-        {% elif field.name == 'materias' or field.name == 'estudiantes' %}
-          <div class="border border-gray-200 rounded-xl p-3 max-h-48 overflow-y-auto text-sm space-y-1">
+
+        {% if field.name == 'estudiantes' %}
+          <p class="text-xs text-purple-600 mb-2">
+            <i class="fas fa-info-circle mr-1"></i>
+            Marca los estudiantes inscritos en este curso
+          </p>
+          <div class="border border-purple-200 rounded-xl p-3 max-h-52 overflow-y-auto text-sm space-y-1 bg-purple-50">
             {{ field }}
           </div>
+
+        {% elif field.name == 'materias' %}
+          <p class="text-xs text-purple-600 mb-2">
+            <i class="fas fa-info-circle mr-1"></i>
+            Marca las materias que se dictan en este curso
+          </p>
+          <div class="border border-gray-200 rounded-xl p-3 max-h-48 overflow-y-auto text-sm space-y-1 bg-gray-50">
+            {{ field }}
+          </div>
+
         {% else %}
           {{ field }}
         {% endif %}
+
         {% if field.errors %}
           <p class="mt-1 text-xs text-red-500">{{ field.errors|join:", " }}</p>
         {% endif %}

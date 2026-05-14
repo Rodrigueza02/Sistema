@@ -32,7 +32,8 @@ def _parse_date(value, fallback=None):
 
 # ── Página de reportes (con filtros) ─────────────────────────────────────────
 
-class ReportesView(LoginRequiredMixin, TemplateView):
+class ReportesView(DocenteOAdminMixin, TemplateView):
+    """Solo docentes y admin acceden a la página de reportes completa."""
     template_name = 'reports/reportes.html'
 
     def get_context_data(self, **kwargs):
@@ -49,12 +50,20 @@ class ReportesView(LoginRequiredMixin, TemplateView):
 # ── Boletín individual PDF ────────────────────────────────────────────────────
 
 class BoletinPDFView(LoginRequiredMixin, View):
-    """PDF con todas las notas de un estudiante, con filtro opcional por fechas."""
+    """PDF con todas las notas de un estudiante.
+    - Admin/Docente: pueden ver el boletín de cualquier estudiante.
+    - Estudiante: solo puede ver su propio boletín.
+    """
 
     def get(self, request, estudiante_id):
         from accounts.models import CustomUser
         from django.shortcuts import get_object_or_404
         estudiante = get_object_or_404(CustomUser, pk=estudiante_id)
+
+        # Estudiante solo puede ver su propio boletín
+        if request.user.es_estudiante() and request.user.pk != estudiante.pk:
+            from django.core.exceptions import PermissionDenied
+            raise PermissionDenied("Solo puedes ver tu propio boletín.")
 
         fecha_desde = _parse_date(request.GET.get('desde'))
         fecha_hasta = _parse_date(request.GET.get('hasta'), datetime.date.today())
@@ -227,8 +236,8 @@ class ActaCursoPDFView(DocenteOAdminMixin, View):
 
 # ── Reporte Excel con filtros ─────────────────────────────────────────────────
 
-class ReporteExcelView(LoginRequiredMixin, View):
-    """Excel con notas y asistencia, filtradas por fecha, materia y/o curso."""
+class ReporteExcelView(DocenteOAdminMixin, View):
+    """Excel con notas y asistencia — solo docentes y admin."""
 
     def get(self, request):
         fecha_desde = _parse_date(request.GET.get('desde'))

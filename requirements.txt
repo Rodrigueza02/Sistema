@@ -32,6 +32,9 @@ pandas>=2.0.0
 # Gráficos (opcional, si se necesita en backend)
 # matplotlib>=3.8.0
 
+# Servidor WSGI para producción (Render/Railway)
+gunicorn>=21.2.0
+
 # ============================================
 # NOTAS DE INSTALACIÓN:
 # ============================================

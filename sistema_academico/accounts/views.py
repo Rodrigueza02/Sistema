@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.views.generic import ListView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from django.contrib.auth.forms import AuthenticationForm
+from django.db import models
 from .models import CustomUser
 from .mixins import SoloAdminMixin
 from django.contrib.auth.forms import UserCreationForm
@@ -28,7 +29,7 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomUserUpdateForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'rol', 'activo', 'telefono', 'foto')
+        fields = ('username', 'email', 'first_name', 'last_name', 'rol', 'activo', 'telefono')  # Sin foto por ahora
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

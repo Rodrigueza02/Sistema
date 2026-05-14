@@ -10,7 +10,7 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('-date_joined',)
     
     fieldsets = UserAdmin.fieldsets + (
-        ('Información Adicional', {'fields': ('rol', 'activo', 'foto', 'telefono')}),
+        ('Información Adicional', {'fields': ('rol', 'activo', 'telefono')}),  # Sin foto por ahora
     )
     
     add_fieldsets = UserAdmin.add_fieldsets + (

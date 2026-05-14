@@ -9,7 +9,7 @@ class CustomUser(AbstractUser):
 
     rol     = models.CharField(max_length=20, choices=Rol.choices, default=Rol.ESTUDIANTE)
     activo  = models.BooleanField(default=True)
-    foto    = models.ImageField(upload_to='usuarios/', blank=True, null=True)
+    #foto    = models.ImageField(upload_to='usuarios/', blank=True, null=True)
     telefono = models.CharField(max_length=20, blank=True)
 
     def es_admin(self):     return self.rol == self.Rol.ADMIN

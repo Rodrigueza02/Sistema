@@ -3,7 +3,7 @@ services:
     name: sistema-academico
     env: python
     buildCommand: "pip install -r requirements.txt && cd sistema_academico && python manage.py collectstatic --noinput"
-    startCommand: "cd sistema_academico && python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    startCommand: "cd sistema_academico && python manage.py migrate --noinput && python manage.py crear_superusuario && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: SECRET_KEY
         generateValue: true

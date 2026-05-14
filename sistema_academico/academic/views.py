@@ -156,10 +156,10 @@ class NotaCreateView(DocenteOAdminMixin, CreateView):
     success_url   = reverse_lazy('nota-list')
 
     def form_valid(self, form):
-        nota = form.save()
-        notificar_nota_email(nota)
+        response = super().form_valid(form)  # guarda la nota una sola vez
+        notificar_nota_email(self.object)    # self.object es la nota recién creada
         messages.success(self.request, 'Nota registrada y notificación enviada.')
-        return super().form_valid(form)
+        return response
 
 
 class NotaUpdateView(DocenteOAdminMixin, UpdateView):

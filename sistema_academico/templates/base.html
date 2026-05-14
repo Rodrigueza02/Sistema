@@ -30,9 +30,40 @@
 
     <nav class="flex-1 p-4 space-y-1">
       {% if user.is_authenticated %}
-      <!-- TODO: Juliana implementará estas rutas -->
+      <!-- Navegación principal -->
+      <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
+        <i class="fas fa-chart-line w-5"></i>
+        <span class="sidebar-text text-sm">Dashboard</span>
+      </a>
+
+      <div class="pt-3 pb-1 px-3 text-xs text-purple-400 uppercase tracking-wider sidebar-text">Académico</div>
+      <a href="{% url 'materia-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
+        <i class="fas fa-book w-5"></i>
+        <span class="sidebar-text text-sm">Materias</span>
+      </a>
+      <a href="{% url 'curso-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
+        <i class="fas fa-layer-group w-5"></i>
+        <span class="sidebar-text text-sm">Cursos</span>
+      </a>
+      <a href="{% url 'nota-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
+        <i class="fas fa-clipboard-list w-5"></i>
+        <span class="sidebar-text text-sm">Notas</span>
+      </a>
+      <a href="{% url 'asistencia-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
+        <i class="fas fa-calendar-check w-5"></i>
+        <span class="sidebar-text text-sm">Asistencia</span>
+      </a>
+      <a href="{% url 'buscar' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
+        <i class="fas fa-search w-5"></i>
+        <span class="sidebar-text text-sm">Buscador</span>
+      </a>
+      <a href="{% url 'reportes' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
+        <i class="fas fa-file-export w-5"></i>
+        <span class="sidebar-text text-sm">Reportes</span>
+      </a>
+
       {% if user.es_admin %}
-      <div class="pt-3 pb-1 px-3 text-xs text-purple-400 uppercase tracking-wider">Admin</div>
+      <div class="pt-3 pb-1 px-3 text-xs text-purple-400 uppercase tracking-wider sidebar-text">Admin</div>
       <a href="{% url 'user-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
         <i class="fas fa-users-cog w-5"></i>
         <span class="sidebar-text text-sm">Usuarios</span>
@@ -67,9 +98,14 @@
         <i class="fas fa-bars text-xl"></i>
       </button>
       <div class="flex items-center gap-4">
-      <div class="flex items-center gap-4">
-        <!-- TODO: Juliana implementará el buscador -->
-      </div>
+        <!-- Buscador rápido -->
+        <form method="get" action="{% url 'buscar' %}" class="hidden md:block">
+          <div class="relative">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input type="text" name="q" placeholder="Buscar…"
+                   class="pl-9 pr-4 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 w-48">
+          </div>
+        </form>
       </div>
     </header>
 

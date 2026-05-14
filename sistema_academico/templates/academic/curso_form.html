@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}{% if form.instance.pk %}Editar{% else %}Nuevo{% endif %} Curso{% endblock %}
+{% block content %}
+
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center gap-3 mb-6">
+    <a href="{% url 'curso-list' %}" class="text-gray-400 hover:text-primary transition-colors">
+      <i class="fas fa-arrow-left"></i>
+    </a>
+    <h1 class="text-2xl font-bold text-gray-800">
+      {% if form.instance.pk %}Editar curso{% else %}Nuevo curso{% endif %}
+    </h1>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="mb-5">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          {{ field.label }}{% if field.field.required %} <span class="text-red-500">*</span>{% endif %}
+        </label>
+        {% if field.field.widget.input_type == 'checkbox' and field.name != 'materias' and field.name != 'estudiantes' %}
+          <div class="flex items-center gap-2">{{ field }}<span class="text-sm text-gray-600">{{ field.label }}</span></div>
+        {% elif field.name == 'materias' or field.name == 'estudiantes' %}
+          <div class="border border-gray-200 rounded-xl p-3 max-h-48 overflow-y-auto text-sm space-y-1">
+            {{ field }}
+          </div>
+        {% else %}
+          {{ field }}
+        {% endif %}
+        {% if field.errors %}
+          <p class="mt-1 text-xs text-red-500">{{ field.errors|join:", " }}</p>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <div class="flex gap-3 pt-2">
+        <button type="submit"
+                class="flex-1 bg-primary text-white py-2.5 rounded-xl hover:bg-primary-light transition-colors font-medium">
+          <i class="fas fa-save mr-2"></i>Guardar
+        </button>
+        <a href="{% url 'curso-list' %}"
+           class="flex-1 text-center bg-gray-100 text-gray-700 py-2.5 rounded-xl hover:bg-gray-200 transition-colors font-medium">
+          Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

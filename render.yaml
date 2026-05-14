@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: sistema-academico
+    env: python
+    buildCommand: "pip install -r requirements.txt && cd sistema_academico && python manage.py collectstatic --noinput"
+    startCommand: "cd sistema_academico && python manage.py migrate --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sga-db
+          property: connectionString
+
+databases:
+  - name: sga-db
+    databaseName: sga
+    user: sga_user

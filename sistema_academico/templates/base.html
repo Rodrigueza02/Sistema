@@ -30,26 +30,7 @@
 
     <nav class="flex-1 p-4 space-y-1">
       {% if user.is_authenticated %}
-      <a href="{% url 'dashboard' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all group">
-        <i class="fas fa-chart-pie w-5"></i>
-        <span class="sidebar-text text-sm">Dashboard</span>
-      </a>
-      <a href="{% url 'materia-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
-        <i class="fas fa-book w-5"></i>
-        <span class="sidebar-text text-sm">Materias</span>
-      </a>
-      <a href="{% url 'curso-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
-        <i class="fas fa-users-class w-5"></i>
-        <span class="sidebar-text text-sm">Cursos</span>
-      </a>
-      <a href="{% url 'nota-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
-        <i class="fas fa-star-half-alt w-5"></i>
-        <span class="sidebar-text text-sm">Calificaciones</span>
-      </a>
-      <a href="{% url 'asistencia-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
-        <i class="fas fa-calendar-check w-5"></i>
-        <span class="sidebar-text text-sm">Asistencia</span>
-      </a>
+      <!-- TODO: Juliana implementará estas rutas -->
       {% if user.es_admin %}
       <div class="pt-3 pb-1 px-3 text-xs text-purple-400 uppercase tracking-wider">Admin</div>
       <a href="{% url 'user-list' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-purple-200 hover:bg-purple-800 hover:text-white transition-all">
@@ -86,14 +67,9 @@
         <i class="fas fa-bars text-xl"></i>
       </button>
       <div class="flex items-center gap-4">
-        <!-- Buscador global -->
-        <form action="{% url 'buscar' %}" method="get" class="flex items-center">
-          <div class="relative">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-            <input name="q" placeholder="Buscar estudiante o curso..."
-              class="pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64">
-          </div>
-        </form>
+      <div class="flex items-center gap-4">
+        <!-- TODO: Juliana implementará el buscador -->
+      </div>
       </div>
     </header>
 

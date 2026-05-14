@@ -1,0 +1,50 @@
+# ============================================
+# SISTEMA DE GESTIÓN ACADÉMICA
+# Proyecto Final - Django
+# Helen & Juliana - 2026
+# ============================================
+
+# Framework principal
+Django>=4.2,<5.0
+
+# Gestión de variables de entorno
+django-environ>=0.11.0
+
+# Formularios con estilos (Tailwind CSS)
+django-crispy-forms>=2.0
+crispy-tailwind>=0.5.0
+
+# Manejo de imágenes (para fotos de perfil)
+Pillow>=10.0.0
+
+# Servir archivos estáticos en producción
+whitenoise>=6.0.0
+
+# Generación de reportes PDF
+reportlab>=4.0.0
+
+# Exportación a Excel
+openpyxl>=3.1.0
+
+# Análisis de datos (no requerido actualmente)
+# pandas>=2.0.0
+
+# Gráficos (opcional, si se necesita en backend)
+# matplotlib>=3.8.0
+
+# Servidor WSGI para producción (Render/Railway)
+gunicorn>=21.2.0
+
+# ============================================
+# NOTAS DE INSTALACIÓN:
+# ============================================
+# Instalar todas las dependencias:
+#   pip install -r requirements.txt
+#
+# Si hay problemas con Pillow en Python 3.14:
+#   pip install --upgrade pip
+#   pip install Pillow --no-cache-dir
+#
+# Crear archivo requirements.txt actualizado:
+#   pip freeze > requirements.txt
+# ============================================

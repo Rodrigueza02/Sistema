@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Eliminar Curso{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto fade-in">
+  <div class="bg-white rounded-3xl shadow-card p-8 text-center">
+    <div class="w-16 h-16 bg-red-50 rounded-3xl flex items-center justify-center mx-auto mb-4">
+      <i class="fas fa-trash text-red-500 text-2xl"></i>
+    </div>
+    <h2 class="text-xl font-extrabold text-gray-800 mb-2">¿Eliminar curso?</h2>
+    <p class="text-gray-500 font-semibold mb-6">
+      Estás a punto de eliminar el curso <span class="text-purple-700">{{ object.nombre }}</span> ({{ object.periodo }}).
+      Se eliminarán también todas las notas y asistencias asociadas.
+    </p>
+    <form method="post" class="flex gap-3">
+      {% csrf_token %}
+      <button type="submit"
+              class="btn-anim flex-1 bg-red-500 text-white py-3 rounded-2xl font-bold hover:bg-red-600 transition-colors">
+        Sí, eliminar
+      </button>
+      <a href="{% url 'curso-list' %}"
+         class="btn-anim flex-1 text-center bg-lavender text-purple-700 py-3 rounded-2xl font-bold hover:bg-lavender-dark transition-colors">
+        Cancelar
+      </a>
+    </form>
+  </div>
+</div>
+{% endblock %}

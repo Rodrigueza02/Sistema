@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<h1 class="text-2xl font-bold text-gray-800 mb-1">
+  {% if rol_dashboard == 'estudiante' %}Bienvenido, {{ user.first_name }} 👋
+  {% elif rol_dashboard == 'docente' %}Mi Panel Docente
+  {% else %}Panel de Control
+  {% endif %}
+</h1>
+<p class="text-sm text-gray-500 mb-6">
+  {% if rol_dashboard == 'estudiante' %}Tu resumen académico personal
+  {% elif rol_dashboard == 'docente' %}Resumen de tus materias y estudiantes
+  {% else %}Resumen general del sistema
+  {% endif %}
+</p>
+
+<!-- Tarjetas -->
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  {% for card in stats %}
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
+    <div class="w-12 h-12 rounded-xl flex items-center justify-center {{ card.bg }}">
+      <i class="{{ card.icon }} text-xl {{ card.color }}"></i>
+    </div>
+    <div>
+      <p class="text-sm text-gray-500">{{ card.label }}</p>
+      <p class="text-2xl font-bold text-gray-800">{{ card.valor }}</p>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+
+{# ═══════════════════════════════════════════════════════ ADMIN #}
+{% if rol_dashboard == 'admin' %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-base font-semibold text-gray-700 mb-4">Promedio por Materia</h2>
+    <canvas id="chartPromedios" height="250"></canvas>
+  </div>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-base font-semibold text-gray-700 mb-4">Asistencia Mensual</h2>
+    <canvas id="chartAsistencia" height="250"></canvas>
+  </div>
+</div>
+
+
+{# ═══════════════════════════════════════════════════════ DOCENTE #}
+{% elif rol_dashboard == 'docente' %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+  <!-- Gráfico promedios de sus materias -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-base font-semibold text-gray-700 mb-4">
+      <i class="fas fa-chart-bar text-purple-500 mr-2"></i>Promedio en mis materias
+    </h2>
+    {% if promedios_docente %}
+    <canvas id="chartPromediosDocente" height="220"></canvas>
+    {% else %}
+    <div class="flex flex-col items-center justify-center h-40 text-gray-400">
+      <i class="fas fa-chart-bar text-3xl mb-2"></i>
+      <p class="text-sm">Aún no hay notas en tus materias</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Últimas notas registradas -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-base font-semibold text-gray-700 mb-4">
+      <i class="fas fa-clipboard-list text-blue-500 mr-2"></i>Últimas notas registradas
+    </h2>
+    {% if ultimas_notas %}
+    <div class="space-y-3">
+      {% for n in ultimas_notas %}
+      <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+        <div>
+          <p class="text-sm font-medium text-gray-800">{{ n.estudiante.get_full_name }}</p>
+          <p class="text-xs text-gray-500">{{ n.materia.nombre }} · {{ n.get_tipo_display }}</p>
+        </div>
+        <span class="text-lg font-bold {% if n.valor >= 3.0 %}text-green-600{% else %}text-red-500{% endif %}">
+          {{ n.valor }}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+    <a href="{% url 'nota-list' %}" class="mt-3 block text-center text-xs text-purple-600 hover:underline">
+      Ver todas las notas →
+    </a>
+    {% else %}
+    <div class="flex flex-col items-center justify-center h-40 text-gray-400">
+      <i class="fas fa-clipboard text-3xl mb-2"></i>
+      <p class="text-sm">No hay notas registradas aún</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Mis materias -->
+{% if mis_materias %}
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+  <h2 class="text-base font-semibold text-gray-700 mb-4">
+    <i class="fas fa-book text-green-500 mr-2"></i>Mis materias
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+    {% for m in mis_materias %}
+    <div class="border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition-colors">
+      <p class="font-medium text-gray-800 text-sm">{{ m.nombre }}</p>
+      <p class="text-xs text-gray-500 mt-1 font-mono">{{ m.codigo }}</p>
+      <p class="text-xs text-purple-500 mt-1">
+        <i class="fas fa-star mr-1"></i>{{ m.creditos }} crédito{{ m.creditos|pluralize }}
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Accesos rápidos docente -->
+<div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+  <a href="{% url 'nota-create' %}"
+     class="bg-purple-50 border border-purple-100 rounded-2xl p-5 flex items-center gap-3 hover:bg-purple-100 transition-colors">
+    <i class="fas fa-plus-circle text-purple-600 text-2xl"></i>
+    <div>
+      <p class="font-semibold text-purple-800 text-sm">Registrar nota</p>
+      <p class="text-xs text-purple-500">Añadir calificación</p>
+    </div>
+  </a>
+  <a href="{% url 'asistencia-create' %}"
+     class="bg-green-50 border border-green-100 rounded-2xl p-5 flex items-center gap-3 hover:bg-green-100 transition-colors">
+    <i class="fas fa-calendar-check text-green-600 text-2xl"></i>
+    <div>
+      <p class="font-semibold text-green-800 text-sm">Registrar asistencia</p>
+      <p class="text-xs text-green-500">Marcar presencia</p>
+    </div>
+  </a>
+  <a href="{% url 'reportes' %}"
+     class="bg-blue-50 border border-blue-100 rounded-2xl p-5 flex items-center gap-3 hover:bg-blue-100 transition-colors">
+    <i class="fas fa-file-export text-blue-600 text-2xl"></i>
+    <div>
+      <p class="font-semibold text-blue-800 text-sm">Generar reporte</p>
+      <p class="text-xs text-blue-500">PDF o Excel</p>
+    </div>
+  </a>
+</div>
+
+
+{# ═══════════════════════════════════════════════════════ ESTUDIANTE #}
+{% elif rol_dashboard == 'estudiante' %}
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+  <!-- Gráfico promedios personales -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-base font-semibold text-gray-700 mb-4">
+      <i class="fas fa-chart-bar text-purple-500 mr-2"></i>Mi promedio por materia
+    </h2>
+    {% if promedios_estudiante %}
+    <canvas id="chartPromediosEst" height="220"></canvas>
+    {% else %}
+    <div class="flex flex-col items-center justify-center h-40 text-gray-400">
+      <i class="fas fa-chart-bar text-3xl mb-2"></i>
+      <p class="text-sm">Aún no tienes notas registradas</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Últimas notas -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <h2 class="text-base font-semibold text-gray-700 mb-4">
+      <i class="fas fa-clipboard-list text-blue-500 mr-2"></i>Últimas notas
+    </h2>
+    {% if ultimas_notas %}
+    <div class="space-y-3">
+      {% for n in ultimas_notas %}
+      <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+        <div>
+          <p class="text-sm font-medium text-gray-800">{{ n.materia.nombre }}</p>
+          <p class="text-xs text-gray-500">{{ n.get_tipo_display }} · {{ n.fecha }}</p>
+        </div>
+        <span class="text-lg font-bold {% if n.valor >= 3.0 %}text-green-600{% else %}text-red-500{% endif %}">
+          {{ n.valor }}
+        </span>
+      </div>
+      {% endfor %}
+    </div>
+    <a href="{% url 'nota-list' %}" class="mt-3 block text-center text-xs text-purple-600 hover:underline">
+      Ver todas mis notas →
+    </a>
+    {% else %}
+    <div class="flex flex-col items-center justify-center h-40 text-gray-400">
+      <i class="fas fa-clipboard text-3xl mb-2"></i>
+      <p class="text-sm">No hay notas registradas aún</p>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+
+<!-- Mis cursos -->
+{% if mis_cursos %}
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+  <h2 class="text-base font-semibold text-gray-700 mb-4">
+    <i class="fas fa-layer-group text-green-500 mr-2"></i>Mis cursos
+  </h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+    {% for c in mis_cursos %}
+    <div class="border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition-colors">
+      <p class="font-medium text-gray-800 text-sm">{{ c.nombre }}</p>
+      <p class="text-xs text-gray-500 mt-1">{{ c.periodo }} · {{ c.año }}</p>
+      <p class="text-xs text-purple-500 mt-1">
+        <i class="fas fa-book mr-1"></i>{{ c.materias.count }} materia{{ c.materias.count|pluralize }}
+      </p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Boletín rápido -->
+<div class="bg-purple-50 border border-purple-100 rounded-2xl p-5 flex items-center justify-between">
+  <div>
+    <p class="font-semibold text-purple-800">¿Quieres tu boletín de notas?</p>
+    <p class="text-sm text-purple-600">Descarga tu reporte en PDF con todas tus calificaciones.</p>
+  </div>
+  <a href="{% url 'boletin-pdf' user.pk %}"
+     class="inline-flex items-center gap-2 bg-purple-600 text-white px-4 py-2.5 rounded-xl hover:bg-purple-700 transition-colors text-sm font-medium shrink-0">
+    <i class="fas fa-file-pdf"></i> Descargar PDF
+  </a>
+</div>
+
+{% endif %}
+
+
+<script>
+{% if rol_dashboard == 'admin' %}
+async function cargarGraficos() {
+  const [rProm, rAsist] = await Promise.all([
+    fetch('/api/promedios/').then(r => r.json()),
+    fetch('/api/asistencia/').then(r => r.json()),
+  ]);
+  new Chart(document.getElementById('chartPromedios'), {
+    type: 'bar',
+    data: {
+      labels: rProm.labels,
+      datasets: [{ label: 'Promedio', data: rProm.data,
+        backgroundColor: 'rgba(91,33,182,0.7)', borderColor: '#5B21B6',
+        borderWidth: 1, borderRadius: 6 }]
+    },
+    options: { scales: { y: { min: 0, max: 5 } }, plugins: { legend: { display: false } } }
+  });
+  new Chart(document.getElementById('chartAsistencia'), {
+    type: 'line',
+    data: {
+      labels: rAsist.labels,
+      datasets: [{ label: 'Presencias', data: rAsist.data,
+        borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)',
+        fill: true, tension: 0.4, pointBackgroundColor: '#10B981' }]
+    },
+    options: { plugins: { legend: { display: false } } }
+  });
+}
+cargarGraficos();
+{% endif %}
+
+{% if rol_dashboard == 'docente' and promedios_docente %}
+new Chart(document.getElementById('chartPromediosDocente'), {
+  type: 'bar',
+  data: {
+    labels: [{% for p in promedios_docente %}"{{ p.materia__nombre }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+    datasets: [{ label: 'Promedio', data: [{% for p in promedios_docente %}{{ p.promedio|floatformat:2 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+      backgroundColor: 'rgba(59,130,246,0.7)', borderColor: '#3B82F6',
+      borderWidth: 1, borderRadius: 6 }]
+  },
+  options: { scales: { y: { min: 0, max: 5 } }, plugins: { legend: { display: false } } }
+});
+{% endif %}
+
+{% if rol_dashboard == 'estudiante' and promedios_estudiante %}
+new Chart(document.getElementById('chartPromediosEst'), {
+  type: 'bar',
+  data: {
+    labels: [{% for p in promedios_estudiante %}"{{ p.materia__nombre }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+    datasets: [{ label: 'Promedio', data: [{% for p in promedios_estudiante %}{{ p.promedio|floatformat:2 }}{% if not forloop.last %},{% endif %}{% endfor %}],
+      backgroundColor: 'rgba(91,33,182,0.7)', borderColor: '#5B21B6',
+      borderWidth: 1, borderRadius: 6 }]
+  },
+  options: { scales: { y: { min: 0, max: 5 } }, plugins: { legend: { display: false } } }
+});
+{% endif %}
+</script>
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object|yesno:"Editar,Nuevo" }} Curso - SGA{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white rounded-2xl shadow-lg p-8">
+    <div class="flex items-center gap-3 mb-6">
+      <i class="fas fa-users text-primary text-3xl"></i>
+      <h1 class="text-3xl font-bold text-gray-800">
+        {% if object %}Editar Curso{% else %}Nuevo Curso{% endif %}
+      </h1>
+    </div>
+
+    <form method="post" class="space-y-6">
+      {% csrf_token %}
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Nombre</label>
+          {{ form.nombre }}
+          {% if form.nombre.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.nombre.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Año</label>
+          {{ form.año }}
+          {% if form.año.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.año.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">Periodo</label>
+          {{ form.periodo }}
+          {% if form.periodo.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.periodo.errors.0 }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Materias</label>
+        <div class="border border-gray-200 rounded-xl p-4 max-h-60 overflow-y-auto">
+          {{ form.materias }}
+        </div>
+        {% if form.materias.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.materias.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Estudiantes</label>
+        <div class="border border-gray-200 rounded-xl p-4 max-h-60 overflow-y-auto">
+          {{ form.estudiantes }}
+        </div>
+        {% if form.estudiantes.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ form.estudiantes.errors.0 }}</p>
+        {% endif %}
+      </div>
+
+      <div class="flex gap-4 pt-4">
+        <button type="submit" class="flex-1 bg-primary hover:bg-primary-light text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl">
+          <i class="fas fa-save mr-2"></i>Guardar
+        </button>
+        <a href="{% url 'curso-list' %}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-all text-center">
+          <i class="fas fa-times mr-2"></i>Cancelar
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

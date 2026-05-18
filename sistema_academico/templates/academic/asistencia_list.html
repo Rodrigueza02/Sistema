@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Asistencia - SGA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-clipboard-check text-primary text-4xl"></i>
+      <h1 class="text-4xl font-bold text-gray-800">Asistencia</h1>
+    </div>
+    {% if user.es_docente or user.es_admin %}
+    <a href="{% url 'asistencia-create' %}" class="bg-primary hover:bg-primary-light text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl">
+      <i class="fas fa-plus mr-2"></i>Registrar Asistencia
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-primary text-white">
+          <tr>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Estudiante</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Materia</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Curso</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Fecha</th>
+            <th class="px-6 py-4 text-center text-sm font-semibold">Estado</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for asistencia in asistencias %}
+          <tr class="hover:bg-purple-50 transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white font-bold">
+                  {{ asistencia.estudiante.first_name|first }}{{ asistencia.estudiante.last_name|first }}
+                </div>
+                <span class="font-semibold text-gray-800">{{ asistencia.estudiante.get_full_name }}</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 text-gray-700">{{ asistencia.materia.nombre }}</td>
+            <td class="px-6 py-4 text-gray-700">{{ asistencia.curso.nombre }}</td>
+            <td class="px-6 py-4 text-gray-600">{{ asistencia.fecha|date:"d/m/Y" }}</td>
+            <td class="px-6 py-4 text-center">
+              <span class="px-3 py-1 rounded-full text-xs font-semibold
+                {% if asistencia.presente %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                {% if asistencia.presente %}Presente{% else %}Ausente{% endif %}
+              </span>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+              <i class="fas fa-inbox text-6xl mb-4 text-gray-300"></i>
+              <p class="text-lg">No hay registros de asistencia</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

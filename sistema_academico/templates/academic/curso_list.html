@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Cursos - SGA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-users text-primary text-4xl"></i>
+      <h1 class="text-4xl font-bold text-gray-800">Cursos</h1>
+    </div>
+    {% if user.es_admin %}
+    <a href="{% url 'curso-create' %}" class="bg-primary hover:bg-primary-light text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl">
+      <i class="fas fa-plus mr-2"></i>Nuevo Curso
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-lg p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for curso in cursos %}
+      <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all">
+        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ curso.nombre }}</h3>
+        <p class="text-sm text-gray-500 mb-4">{{ curso.periodo }}</p>
+        <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
+          <i class="fas fa-calendar"></i>
+          <span>Año {{ curso.año }}</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
+          <i class="fas fa-book"></i>
+          <span>{{ curso.materias.count }} materias</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <i class="fas fa-user-graduate"></i>
+          <span>{{ curso.estudiantes.count }} estudiantes</span>
+        </div>
+        {% if user.es_admin %}
+        <div class="flex gap-2 mt-4 pt-4 border-t">
+          <a href="{% url 'curso-update' curso.pk %}" class="flex-1 text-center bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 rounded-lg transition-colors">
+            <i class="fas fa-edit"></i>
+          </a>
+          <a href="{% url 'curso-delete' curso.pk %}" class="flex-1 text-center bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-lg transition-colors">
+            <i class="fas fa-trash"></i>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <div class="col-span-full text-center py-12">
+        <i class="fas fa-inbox text-6xl mb-4 text-gray-300"></i>
+        <p class="text-lg text-gray-500">No hay cursos registrados</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Buscar - SGA{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center gap-3 mb-6">
+    <i class="fas fa-search text-primary text-4xl"></i>
+    <h1 class="text-4xl font-bold text-gray-800">Buscador</h1>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+    <form method="get" class="flex gap-4">
+      <input type="text" name="q" value="{{ query }}" placeholder="Buscar estudiantes o cursos..." 
+        class="flex-1 px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500">
+      <button type="submit" class="bg-primary hover:bg-primary-light text-white font-semibold py-3 px-6 rounded-xl transition-all">
+        <i class="fas fa-search mr-2"></i>Buscar
+      </button>
+    </form>
+  </div>
+
+  {% if query %}
+  <div class="space-y-6">
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">
+        <i class="fas fa-user-graduate text-primary mr-2"></i>Estudiantes
+      </h2>
+      {% if estudiantes %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for estudiante in estudiantes %}
+        <div class="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-accent flex items-center justify-center text-white font-bold text-lg">
+              {{ estudiante.first_name|first }}{{ estudiante.last_name|first }}
+            </div>
+            <div>
+              <p class="font-semibold text-gray-800">{{ estudiante.get_full_name }}</p>
+              <p class="text-sm text-gray-500">{{ estudiante.email }}</p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-gray-500">No se encontraron estudiantes</p>
+      {% endif %}
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-lg p-6">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">
+        <i class="fas fa-users text-primary mr-2"></i>Cursos
+      </h2>
+      {% if cursos %}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for curso in cursos %}
+        <div class="border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all">
+          <h3 class="text-lg font-bold text-gray-800">{{ curso.nombre }}</h3>
+          <p class="text-sm text-gray-500">{{ curso.periodo }}</p>
+          <div class="flex items-center gap-4 mt-2 text-sm text-gray-600">
+            <span><i class="fas fa-user-graduate mr-1"></i>{{ curso.estudiantes.count }}</span>
+            <span><i class="fas fa-book mr-1"></i>{{ curso.materias.count }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="text-gray-500">No se encontraron cursos</p>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

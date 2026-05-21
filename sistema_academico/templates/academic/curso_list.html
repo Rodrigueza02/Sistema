@@ -1,77 +1,57 @@
 {% extends 'base.html' %}
-{% block title %}Cursos{% endblock %}
+
+{% block title %}Cursos - SGA{% endblock %}
+
 {% block content %}
-
-<div class="flex items-center justify-between mb-6 fade-in">
-  <div>
-    <h1 class="text-2xl font-extrabold text-gray-800">Cursos</h1>
-    <p class="text-sm text-gray-500 mt-0.5">Gestión de cursos y estudiantes inscritos</p>
-  </div>
-  {% if user.es_admin %}
-  <a href="{% url 'curso-create' %}"
-     class="btn-anim inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-white text-sm font-bold shadow-card"
-     style="background: linear-gradient(135deg, #7C5CBF, #9B7FD4);">
-    <i class="fas fa-plus"></i> Nuevo curso
-  </a>
-  {% endif %}
-</div>
-
-<form method="get" class="mb-5 fade-in-2">
-  <div class="relative max-w-sm">
-    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-purple-400 text-sm"></i>
-    <input type="text" name="q" value="{{ query }}" placeholder="Buscar por nombre o período…"
-           class="w-full pl-11 pr-4 py-3 rounded-2xl border-2 border-lavender bg-white text-sm font-semibold">
-  </div>
-</form>
-
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 fade-in-3">
-  {% for c in cursos %}
-  <div class="card-anim bg-white rounded-3xl shadow-card p-5 border border-lavender">
-    <div class="flex items-start justify-between mb-3">
-      <div>
-        <h3 class="font-extrabold text-gray-800">{{ c.nombre }}</h3>
-        <div class="flex items-center gap-2 mt-1">
-          <span class="text-xs font-bold px-2.5 py-1 rounded-xl bg-lavender text-purple-700">{{ c.periodo }}</span>
-          <span class="text-xs font-bold px-2.5 py-1 rounded-xl bg-peach text-orange-700">{{ c.año }}</span>
-        </div>
-      </div>
-      {% if user.es_admin %}
-      <div class="flex gap-1.5">
-        <a href="{% url 'curso-update' c.pk %}"
-           class="btn-anim w-8 h-8 rounded-xl flex items-center justify-center bg-sky text-blue-600 hover:bg-blue-100" title="Editar">
-          <i class="fas fa-pen text-xs"></i>
-        </a>
-        <a href="{% url 'curso-delete' c.pk %}"
-           class="btn-anim w-8 h-8 rounded-xl flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-100" title="Eliminar">
-          <i class="fas fa-trash text-xs"></i>
-        </a>
-      </div>
-      {% endif %}
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-users text-primary text-4xl"></i>
+      <h1 class="text-4xl font-bold text-gray-800">Cursos</h1>
     </div>
-
-    <div class="flex gap-3 text-xs font-bold border-t border-lavender pt-3 mt-3">
-      <span class="flex items-center gap-1 text-purple-600">
-        <i class="fas fa-book"></i>{{ c.materias.count }} materia{{ c.materias.count|pluralize }}
-      </span>
-      <span class="flex items-center gap-1 text-green-600">
-        <i class="fas fa-users"></i>{{ c.estudiantes.count }} estudiante{{ c.estudiantes.count|pluralize }}
-      </span>
-    </div>
-
     {% if user.es_admin %}
-    <a href="{% url 'curso-update' c.pk %}"
-       class="btn-anim mt-3 w-full flex items-center justify-center gap-2 text-xs font-bold py-2 rounded-2xl border-2 border-lavender text-purple-700 hover:bg-lavender transition-colors">
-      <i class="fas fa-user-plus"></i> Inscribir / gestionar estudiantes
+    <a href="{% url 'curso-create' %}" class="bg-primary hover:bg-primary-light text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl">
+      <i class="fas fa-plus mr-2"></i>Nuevo Curso
     </a>
     {% endif %}
   </div>
-  {% empty %}
-  <div class="col-span-3 text-center py-16 text-gray-400">
-    <i class="fas fa-layer-group text-4xl mb-3 block text-lavender-dark"></i>
-    <p class="font-semibold">No se encontraron cursos.</p>
-  </div>
-  {% endfor %}
-</div>
 
-{% include 'partials/pagination.html' %}
+  <div class="bg-white rounded-2xl shadow-lg p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for curso in cursos %}
+      <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all">
+        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ curso.nombre }}</h3>
+        <p class="text-sm text-gray-500 mb-4">{{ curso.periodo }}</p>
+        <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
+          <i class="fas fa-calendar"></i>
+          <span>Año {{ curso.año }}</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
+          <i class="fas fa-book"></i>
+          <span>{{ curso.materias.count }} materias</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <i class="fas fa-user-graduate"></i>
+          <span>{{ curso.estudiantes.count }} estudiantes</span>
+        </div>
+        {% if user.es_admin %}
+        <div class="flex gap-2 mt-4 pt-4 border-t">
+          <a href="{% url 'curso-update' curso.pk %}" class="flex-1 text-center bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 rounded-lg transition-colors">
+            <i class="fas fa-edit"></i>
+          </a>
+          <a href="{% url 'curso-delete' curso.pk %}" class="flex-1 text-center bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-lg transition-colors">
+            <i class="fas fa-trash"></i>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <div class="col-span-full text-center py-12">
+        <i class="fas fa-inbox text-6xl mb-4 text-gray-300"></i>
+        <p class="text-lg text-gray-500">No hay cursos registrados</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

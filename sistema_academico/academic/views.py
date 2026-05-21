@@ -8,9 +8,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models.functions import TruncMonth
 
 from accounts.mixins import DocenteOAdminMixin, SoloAdminMixin
-from accounts.tasks import notificar_nota_email
 from .models import Materia, Curso, Nota, Asistencia
 from .forms import MateriaForm, CursoForm, NotaForm, AsistenciaForm
+from .tasks import notificar_nota_email
 
 
 # ── Materias ──────────────────────────────────────────────────────────────────

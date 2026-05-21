@@ -1,52 +1,71 @@
 {% extends 'base.html' %}
-{% block title %}Registrar Asistencia{% endblock %}
+
+{% block title %}Registrar Asistencia - SGA{% endblock %}
+
 {% block content %}
-
-<div class="max-w-xl mx-auto">
-  <div class="flex items-center gap-3 mb-6 fade-in">
-    <a href="{% url 'asistencia-list' %}"
-       class="btn-anim w-9 h-9 rounded-2xl flex items-center justify-center bg-lavender text-purple-600 hover:bg-lavender-dark">
-      <i class="fas fa-arrow-left text-sm"></i>
-    </a>
-    <div>
-      <h1 class="text-2xl font-extrabold text-gray-800">Registrar asistencia</h1>
-      <p class="text-sm text-gray-500">Marca la presencia del estudiante</p>
+<div class="max-w-3xl mx-auto">
+  <div class="bg-white rounded-2xl shadow-lg p-8">
+    <div class="flex items-center gap-3 mb-6">
+      <i class="fas fa-clipboard-check text-primary text-3xl"></i>
+      <h1 class="text-3xl font-bold text-gray-800">Registrar Asistencia</h1>
     </div>
-  </div>
 
-  <div class="bg-white rounded-3xl shadow-card p-6 fade-in-2">
-    <form method="post" novalidate>
+    <form method="post" class="space-y-6">
       {% csrf_token %}
-      {% for field in form %}
-      <div class="mb-4">
-        <label class="block text-sm font-bold text-gray-700 mb-1.5">
-          {{ field.label }}{% if field.field.required %} <span class="text-purple-500">*</span>{% endif %}
-        </label>
-        {% if field.name == 'presente' %}
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-2xl border-2 border-lavender hover:bg-lavender/50 transition-colors">
-            {{ field }}
-            <span class="text-sm font-bold text-gray-700">Marcar como presente</span>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            <i class="fas fa-user-graduate mr-2"></i>Estudiante
           </label>
-        {% else %}
-          {{ field }}
-        {% endif %}
-        {% if field.errors %}
-          <p class="mt-1 text-xs font-semibold text-red-500 flex items-center gap-1">
-            <i class="fas fa-exclamation-circle"></i>{{ field.errors|join:", " }}
-          </p>
-        {% endif %}
-      </div>
-      {% endfor %}
+          {{ form.estudiante }}
+          {% if form.estudiante.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.estudiante.errors.0 }}</p>
+          {% endif %}
+        </div>
 
-      <div class="flex gap-3 pt-3">
-        <button type="submit"
-                class="btn-anim flex-1 text-white py-3 rounded-2xl font-bold text-sm shadow-card"
-                style="background: linear-gradient(135deg, #7C5CBF, #9B7FD4);">
-          <i class="fas fa-save mr-2"></i>Guardar
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            <i class="fas fa-book mr-2"></i>Materia
+          </label>
+          {{ form.materia }}
+          {% if form.materia.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.materia.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            <i class="fas fa-users mr-2"></i>Curso
+          </label>
+          {{ form.curso }}
+          {% if form.curso.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.curso.errors.0 }}</p>
+          {% endif %}
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-gray-700 mb-2">
+            <i class="fas fa-calendar mr-2"></i>Fecha
+          </label>
+          {{ form.fecha }}
+          {% if form.fecha.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ form.fecha.errors.0 }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        {{ form.presente }}
+        <label class="text-sm font-semibold text-gray-700">Estudiante presente</label>
+      </div>
+
+      <div class="flex gap-4 pt-4">
+        <button type="submit" class="flex-1 bg-primary hover:bg-primary-light text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl">
+          <i class="fas fa-save mr-2"></i>Guardar Asistencia
         </button>
-        <a href="{% url 'asistencia-list' %}"
-           class="btn-anim flex-1 text-center bg-lavender text-purple-700 py-3 rounded-2xl font-bold text-sm hover:bg-lavender-dark transition-colors">
-          Cancelar
+        <a href="{% url 'asistencia-list' %}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-all text-center">
+          <i class="fas fa-times mr-2"></i>Cancelar
         </a>
       </div>
     </form>

@@ -1,98 +1,62 @@
 {% extends 'base.html' %}
-{% block title %}Materias{% endblock %}
+
+{% block title %}Materias - SGA{% endblock %}
+
 {% block content %}
-
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 fade-in">
-  <div>
-    <h1 class="text-xl md:text-2xl font-extrabold text-gray-800">Materias</h1>
-    <p class="text-sm text-gray-500 mt-0.5">Gestión de materias académicas</p>
-  </div>
-  {% if user.es_admin %}
-  <a href="{% url 'materia-create' %}"
-     class="btn-anim inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-white text-sm font-bold shadow-card self-start sm:self-auto"
-     style="background:linear-gradient(135deg,#7C5CBF,#9B7FD4);">
-    <i class="fas fa-plus"></i> Nueva materia
-  </a>
-  {% endif %}
-</div>
-
-<form method="get" class="mb-5 fade-in-2">
-  <div class="relative max-w-sm">
-    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-purple-400 text-sm"></i>
-    <input type="text" name="q" value="{{ query }}" placeholder="Buscar por nombre o código…"
-           class="w-full pl-11 pr-4 py-3 rounded-2xl border-2 border-lavender bg-white text-sm font-semibold">
-  </div>
-</form>
-
-<!-- Tabla (md+) -->
-<div class="bg-white rounded-3xl shadow-card overflow-hidden fade-in-3 hide-mobile">
-  <div class="table-wrap">
-    <table class="w-full text-sm min-w-[600px]">
-      <thead>
-        <tr style="background:linear-gradient(135deg,#EDE9FF,#E0D9FF);">
-          <th class="px-5 py-4 text-left text-xs font-extrabold text-purple-700 uppercase tracking-wider">Código</th>
-          <th class="px-5 py-4 text-left text-xs font-extrabold text-purple-700 uppercase tracking-wider">Nombre</th>
-          <th class="px-5 py-4 text-left text-xs font-extrabold text-purple-700 uppercase tracking-wider">Docente</th>
-          <th class="px-5 py-4 text-center text-xs font-extrabold text-purple-700 uppercase tracking-wider">Créditos</th>
-          <th class="px-5 py-4 text-center text-xs font-extrabold text-purple-700 uppercase tracking-wider">Estado</th>
-          {% if user.es_admin %}<th class="px-5 py-4 text-center text-xs font-extrabold text-purple-700 uppercase tracking-wider">Acciones</th>{% endif %}
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-lavender">
-        {% for m in materias %}
-        <tr class="hover:bg-lavender/40 transition-colors">
-          <td class="px-5 py-3.5"><span class="font-mono text-xs font-bold px-2.5 py-1 rounded-xl bg-lavender text-purple-700">{{ m.codigo }}</span></td>
-          <td class="px-5 py-3.5 font-bold text-gray-800">{{ m.nombre }}</td>
-          <td class="px-5 py-3.5 text-gray-500 font-semibold">{{ m.docente.get_full_name|default:"—" }}</td>
-          <td class="px-5 py-3.5 text-center"><span class="inline-flex items-center justify-center w-8 h-8 rounded-2xl bg-sky text-blue-700 font-extrabold text-sm">{{ m.creditos }}</span></td>
-          <td class="px-5 py-3.5 text-center">
-            {% if m.activa %}<span class="inline-flex items-center gap-1 bg-mint text-green-700 text-xs px-3 py-1 rounded-2xl font-bold"><i class="fas fa-circle text-[6px]"></i>Activa</span>
-            {% else %}<span class="inline-flex items-center gap-1 bg-gray-100 text-gray-500 text-xs px-3 py-1 rounded-2xl font-bold"><i class="fas fa-circle text-[6px]"></i>Inactiva</span>{% endif %}
-          </td>
-          {% if user.es_admin %}
-          <td class="px-5 py-3.5 text-center">
-            <div class="flex items-center justify-center gap-2">
-              <a href="{% url 'materia-update' m.pk %}" class="btn-anim w-8 h-8 rounded-xl flex items-center justify-center bg-sky text-blue-600 hover:bg-blue-100"><i class="fas fa-pen text-xs"></i></a>
-              <a href="{% url 'materia-delete' m.pk %}" class="btn-anim w-8 h-8 rounded-xl flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-100"><i class="fas fa-trash text-xs"></i></a>
-            </div>
-          </td>
-          {% endif %}
-        </tr>
-        {% empty %}
-        <tr><td colspan="6" class="px-5 py-16 text-center text-gray-400"><i class="fas fa-book text-4xl mb-3 block"></i><p class="font-semibold">No se encontraron materias.</p></td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- Cards (móvil) -->
-<div class="space-y-3 show-mobile fade-in-3">
-  {% for m in materias %}
-  <div class="card-anim bg-white rounded-3xl shadow-card p-4 border border-lavender">
-    <div class="flex items-start justify-between mb-2">
-      <div>
-        <span class="font-mono text-xs font-bold px-2 py-0.5 rounded-xl bg-lavender text-purple-700">{{ m.codigo }}</span>
-        <p class="font-extrabold text-gray-800 mt-1">{{ m.nombre }}</p>
-        <p class="text-xs text-gray-500 font-semibold">{{ m.docente.get_full_name|default:"Sin docente" }}</p>
-      </div>
-      <div class="flex flex-col items-end gap-1">
-        {% if m.activa %}<span class="bg-mint text-green-700 text-xs px-2 py-0.5 rounded-xl font-bold">Activa</span>
-        {% else %}<span class="bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-xl font-bold">Inactiva</span>{% endif %}
-        <span class="bg-sky text-blue-700 text-xs px-2 py-0.5 rounded-xl font-bold">{{ m.creditos }} cr.</span>
-      </div>
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-book text-primary text-4xl"></i>
+      <h1 class="text-4xl font-bold text-gray-800">Materias</h1>
     </div>
     {% if user.es_admin %}
-    <div class="flex gap-2 mt-3 pt-3 border-t border-lavender">
-      <a href="{% url 'materia-update' m.pk %}" class="btn-anim flex-1 flex items-center justify-center gap-1 py-2 rounded-2xl bg-sky text-blue-700 text-xs font-bold"><i class="fas fa-pen"></i>Editar</a>
-      <a href="{% url 'materia-delete' m.pk %}" class="btn-anim flex-1 flex items-center justify-center gap-1 py-2 rounded-2xl bg-red-50 text-red-600 text-xs font-bold"><i class="fas fa-trash"></i>Eliminar</a>
-    </div>
+    <a href="{% url 'materia-create' %}" class="bg-primary hover:bg-primary-light text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl">
+      <i class="fas fa-plus mr-2"></i>Nueva Materia
+    </a>
     {% endif %}
   </div>
-  {% empty %}
-  <div class="text-center py-12 text-gray-400"><i class="fas fa-book text-4xl mb-3 block"></i><p class="font-semibold">No se encontraron materias.</p></div>
-  {% endfor %}
-</div>
 
-{% include 'partials/pagination.html' %}
+  <div class="bg-white rounded-2xl shadow-lg p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for materia in materias %}
+      <div class="border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h3 class="text-xl font-bold text-gray-800">{{ materia.nombre }}</h3>
+            <p class="text-sm text-gray-500">{{ materia.codigo }}</p>
+          </div>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold
+            {% if materia.activa %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+            {% if materia.activa %}Activa{% else %}Inactiva{% endif %}
+          </span>
+        </div>
+        <p class="text-gray-600 text-sm mb-4">{{ materia.descripcion|truncatewords:15 }}</p>
+        <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
+          <i class="fas fa-user-tie"></i>
+          <span>{{ materia.docente.get_full_name|default:"Sin asignar" }}</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-gray-600">
+          <i class="fas fa-graduation-cap"></i>
+          <span>{{ materia.creditos }} créditos</span>
+        </div>
+        {% if user.es_admin %}
+        <div class="flex gap-2 mt-4 pt-4 border-t">
+          <a href="{% url 'materia-update' materia.pk %}" class="flex-1 text-center bg-blue-100 hover:bg-blue-200 text-blue-700 py-2 rounded-lg transition-colors">
+            <i class="fas fa-edit"></i>
+          </a>
+          <a href="{% url 'materia-delete' materia.pk %}" class="flex-1 text-center bg-red-100 hover:bg-red-200 text-red-700 py-2 rounded-lg transition-colors">
+            <i class="fas fa-trash"></i>
+          </a>
+        </div>
+        {% endif %}
+      </div>
+      {% empty %}
+      <div class="col-span-full text-center py-12">
+        <i class="fas fa-inbox text-6xl mb-4 text-gray-300"></i>
+        <p class="text-lg text-gray-500">No hay materias registradas</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
 {% endblock %}

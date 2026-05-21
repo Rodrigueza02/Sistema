@@ -1,94 +1,117 @@
 {% extends 'base.html' %}
-{% block title %}Notas{% endblock %}
+
+{% block title %}Notas - SGA{% endblock %}
+
 {% block content %}
-
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 fade-in">
-  <div>
-    <h1 class="text-xl md:text-2xl font-extrabold text-gray-800">Notas</h1>
-    <p class="text-sm text-gray-500 mt-0.5">{% if user.es_estudiante %}Tus calificaciones{% else %}Calificaciones de todos los estudiantes{% endif %}</p>
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-clipboard-list text-primary text-4xl"></i>
+      <h1 class="text-4xl font-bold text-gray-800">Notas</h1>
+    </div>
+    {% if user.es_docente or user.es_admin %}
+    <a href="{% url 'nota-create' %}" class="bg-primary hover:bg-primary-light text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-lg hover:shadow-xl">
+      <i class="fas fa-plus mr-2"></i>Registrar Nota
+    </a>
+    {% endif %}
   </div>
-  {% if user.es_docente or user.es_admin %}
-  <a href="{% url 'nota-create' %}"
-     class="btn-anim inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-white text-sm font-bold shadow-card self-start sm:self-auto"
-     style="background:linear-gradient(135deg,#7C5CBF,#9B7FD4);">
-    <i class="fas fa-plus"></i> Registrar nota
-  </a>
-  {% endif %}
-</div>
 
-<form method="get" class="mb-5 fade-in-2">
-  <div class="relative max-w-sm">
-    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-purple-400 text-sm"></i>
-    <input type="text" name="q" value="{{ query }}" placeholder="Buscar por estudiante o materia…"
-           class="w-full pl-11 pr-4 py-3 rounded-2xl border-2 border-lavender bg-white text-sm font-semibold">
-  </div>
-</form>
+  <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full">
+        <thead class="bg-primary text-white">
+          <tr>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Estudiante</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Materia</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Curso</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Tipo</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Nota</th>
+            <th class="px-6 py-4 text-left text-sm font-semibold">Fecha</th>
+            {% if user.es_docente or user.es_admin %}
+            <th class="px-6 py-4 text-center text-sm font-semibold">Acciones</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for nota in notas %}
+          <tr class="hover:bg-purple-50 transition-colors">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center text-white font-bold">
+                  {{ nota.estudiante.first_name|first }}{{ nota.estudiante.last_name|first }}
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-800">{{ nota.estudiante.get_full_name }}</p>
+                  <p class="text-sm text-gray-500">{{ nota.estudiante.email }}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-6 py-4">
+              <p class="font-semibold text-gray-800">{{ nota.materia.nombre }}</p>
+              <p class="text-sm text-gray-500">{{ nota.materia.codigo }}</p>
+            </td>
+            <td class="px-6 py-4 text-gray-700">{{ nota.curso.nombre }}</td>
+            <td class="px-6 py-4">
+              <span class="px-3 py-1 rounded-full text-xs font-semibold
+                {% if nota.tipo == 'final' %}bg-red-100 text-red-800
+                {% elif nota.tipo == 'parcial' %}bg-blue-100 text-blue-800
+                {% else %}bg-green-100 text-green-800{% endif %}">
+                {{ nota.get_tipo_display }}
+              </span>
+            </td>
+            <td class="px-6 py-4">
+              <span class="text-2xl font-bold
+                {% if nota.valor >= 3.5 %}text-green-600
+                {% elif nota.valor >= 3.0 %}text-yellow-600
+                {% else %}text-red-600{% endif %}">
+                {{ nota.valor }}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-gray-600">{{ nota.fecha|date:"d/m/Y" }}</td>
+            {% if user.es_docente or user.es_admin %}
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-center gap-2">
+                <a href="{% url 'nota-update' nota.pk %}" class="text-blue-600 hover:text-blue-800 transition-colors" title="Editar">
+                  <i class="fas fa-edit"></i>
+                </a>
+                {% if user.es_admin %}
+                <a href="{% url 'nota-delete' nota.pk %}" class="text-red-600 hover:text-red-800 transition-colors" title="Eliminar">
+                  <i class="fas fa-trash"></i>
+                </a>
+                {% endif %}
+              </div>
+            </td>
+            {% endif %}
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+              <i class="fas fa-inbox text-6xl mb-4 text-gray-300"></i>
+              <p class="text-lg">No hay notas registradas</p>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
 
-<!-- Tabla (md+) -->
-<div class="bg-white rounded-3xl shadow-card overflow-hidden fade-in-3 hide-mobile">
-  <div class="table-wrap">
-    <table class="w-full text-sm min-w-[640px]">
-      <thead>
-        <tr style="background:linear-gradient(135deg,#EDE9FF,#E0D9FF);">
-          <th class="px-5 py-4 text-left text-xs font-extrabold text-purple-700 uppercase tracking-wider">Estudiante</th>
-          <th class="px-5 py-4 text-left text-xs font-extrabold text-purple-700 uppercase tracking-wider">Materia</th>
-          <th class="px-5 py-4 text-left text-xs font-extrabold text-purple-700 uppercase tracking-wider">Curso</th>
-          <th class="px-5 py-4 text-center text-xs font-extrabold text-purple-700 uppercase tracking-wider">Tipo</th>
-          <th class="px-5 py-4 text-center text-xs font-extrabold text-purple-700 uppercase tracking-wider">Nota</th>
-          <th class="px-5 py-4 text-center text-xs font-extrabold text-purple-700 uppercase tracking-wider">Fecha</th>
-          {% if user.es_docente or user.es_admin %}<th class="px-5 py-4 text-center text-xs font-extrabold text-purple-700 uppercase tracking-wider">Acciones</th>{% endif %}
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-lavender">
-        {% for n in notas %}
-        <tr class="hover:bg-lavender/40 transition-colors">
-          <td class="px-5 py-3.5 font-bold text-gray-800">{{ n.estudiante.get_full_name }}</td>
-          <td class="px-5 py-3.5 text-gray-600 font-semibold">{{ n.materia.nombre }}</td>
-          <td class="px-5 py-3.5 text-gray-500 font-semibold">{{ n.curso.nombre }}</td>
-          <td class="px-5 py-3.5 text-center"><span class="bg-lavender text-purple-700 text-xs px-3 py-1 rounded-2xl font-bold">{{ n.get_tipo_display }}</span></td>
-          <td class="px-5 py-3.5 text-center"><span class="inline-flex items-center justify-center w-12 h-8 rounded-2xl text-sm font-extrabold {% if n.valor >= 3.0 %}bg-mint text-green-700{% else %}bg-red-50 text-red-600{% endif %}">{{ n.valor }}</span></td>
-          <td class="px-5 py-3.5 text-center text-gray-500 font-semibold text-xs">{{ n.fecha }}</td>
-          {% if user.es_docente or user.es_admin %}
-          <td class="px-5 py-3.5 text-center">
-            <div class="flex items-center justify-center gap-2">
-              <a href="{% url 'nota-update' n.pk %}" class="btn-anim w-8 h-8 rounded-xl flex items-center justify-center bg-sky text-blue-600 hover:bg-blue-100"><i class="fas fa-pen text-xs"></i></a>
-              {% if user.es_admin %}<a href="{% url 'nota-delete' n.pk %}" class="btn-anim w-8 h-8 rounded-xl flex items-center justify-center bg-red-50 text-red-500 hover:bg-red-100"><i class="fas fa-trash text-xs"></i></a>{% endif %}
-            </div>
-          </td>
-          {% endif %}
-        </tr>
-        {% empty %}
-        <tr><td colspan="7" class="px-5 py-16 text-center text-gray-400"><i class="fas fa-clipboard-list text-4xl mb-3 block"></i><p class="font-semibold">No se encontraron notas.</p></td></tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<!-- Cards (móvil) -->
-<div class="space-y-3 show-mobile fade-in-3">
-  {% for n in notas %}
-  <div class="card-anim bg-white rounded-3xl shadow-card p-4 border border-lavender">
-    <div class="flex items-start justify-between mb-2">
-      <div>
-        <p class="font-extrabold text-gray-800">{{ n.estudiante.get_full_name }}</p>
-        <p class="text-sm text-gray-600 font-semibold">{{ n.materia.nombre }}</p>
-        <p class="text-xs text-gray-400 font-semibold">{{ n.curso.nombre }} · {{ n.fecha }}</p>
+    {% if is_paginated %}
+    <div class="bg-gray-50 px-6 py-4 flex items-center justify-between border-t">
+      <div class="text-sm text-gray-600">
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
       </div>
-      <span class="text-2xl font-extrabold {% if n.valor >= 3.0 %}text-green-600{% else %}text-red-500{% endif %}">{{ n.valor }}</span>
+      <div class="flex gap-2">
+        {% if page_obj.has_previous %}
+        <a href="?page=1" class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50">Primera</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50">Anterior</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50">Siguiente</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50">Última</a>
+        {% endif %}
+      </div>
     </div>
-    <div class="flex items-center gap-2 mt-2">
-      <span class="bg-lavender text-purple-700 text-xs px-2.5 py-1 rounded-2xl font-bold">{{ n.get_tipo_display }}</span>
-      {% if user.es_docente or user.es_admin %}
-      <a href="{% url 'nota-update' n.pk %}" class="ml-auto btn-anim px-3 py-1 rounded-xl bg-sky text-blue-700 text-xs font-bold"><i class="fas fa-pen mr-1"></i>Editar</a>
-      {% if user.es_admin %}<a href="{% url 'nota-delete' n.pk %}" class="btn-anim px-3 py-1 rounded-xl bg-red-50 text-red-600 text-xs font-bold"><i class="fas fa-trash mr-1"></i>Eliminar</a>{% endif %}
-      {% endif %}
-    </div>
+    {% endif %}
   </div>
-  {% empty %}
-  <div class="text-center py-12 text-gray-400"><i class="fas fa-clipboard-list text-4xl mb-3 block"></i><p class="font-semibold">No se encontraron notas.</p></div>
-  {% endfor %}
 </div>
-
-{% include 'partials/pagination.html' %}
 {% endblock %}

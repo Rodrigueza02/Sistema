@@ -223,16 +223,7 @@ Credenciales reales del sistema desplegado.
 
 #### Producción (Render)
 - **URL:** https://sistema-academico-qiuh.onrender.com/
-- **Usuario Administrador:**
-  - Username: `_admin____`
-  - Password: `__Admin2026*___`
-- **Usuario Docente:**
-  - Username: `_FernandaDocente______________`
-  - Password: `_Malua.230225______`
-- **Usuario Estudiante:**
-  - Username: `___helenestudiante_______`
-  - Password: `__Malua.230225_____`
-
+- no puedo have
 #### Desarrollo Local
 - **URL:** http://127.0.0.1:8000/
 - **Superusuario:**

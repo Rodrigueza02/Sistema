@@ -26,11 +26,17 @@ reportlab>=4.0.0
 # Exportación a Excel
 openpyxl>=3.1.0
 
-# Análisis de datos y exportación
-pandas>=2.0.0
+# Análisis de datos (no requerido actualmente)
+# pandas>=2.0.0
 
 # Gráficos (opcional, si se necesita en backend)
 # matplotlib>=3.8.0
+
+# Servidor WSGI para producción (Render/Railway)
+gunicorn>=21.2.0
+
+# Driver PostgreSQL para producción
+psycopg2-binary>=2.9.9
 
 # ============================================
 # NOTAS DE INSTALACIÓN:

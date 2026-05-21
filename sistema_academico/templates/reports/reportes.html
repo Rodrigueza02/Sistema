@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% block title %}Reportes{% endblock %}
+{% block content %}
+
+<h1 class="text-2xl font-bold text-gray-800 mb-6">Reportes y Exportación</h1>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+  <!-- ── Boletín PDF individual ─────────────────────────────────────── -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+        <i class="fas fa-file-pdf text-red-500 text-lg"></i>
+      </div>
+      <div>
+        <h2 class="font-semibold text-gray-800">Boletín de Notas (PDF)</h2>
+        <p class="text-xs text-gray-500">Notas individuales de un estudiante</p>
+      </div>
+    </div>
+
+    <form method="get" action="#" id="form-boletin">
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Estudiante</label>
+          <select name="estudiante_id" id="sel-estudiante" required
+                  class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="">— Seleccionar estudiante —</option>
+            {% for est in estudiantes %}
+            <option value="{{ est.pk }}">{{ est.get_full_name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Desde</label>
+            <input type="date" name="desde"
+                   class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Hasta</label>
+            <input type="date" name="hasta"
+                   class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+          </div>
+        </div>
+        <button type="button" onclick="descargarBoletin()"
+                class="w-full bg-red-500 text-white py-2.5 rounded-xl hover:bg-red-600 transition-colors font-medium text-sm">
+          <i class="fas fa-download mr-2"></i>Descargar PDF
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ── Acta de curso PDF ──────────────────────────────────────────── -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+        <i class="fas fa-file-alt text-orange-500 text-lg"></i>
+      </div>
+      <div>
+        <h2 class="font-semibold text-gray-800">Acta de Curso (PDF)</h2>
+        <p class="text-xs text-gray-500">Notas de todos los estudiantes de un curso</p>
+      </div>
+    </div>
+
+    <form method="get" action="#" id="form-acta">
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Curso</label>
+          <select name="curso_id" id="sel-curso-acta" required
+                  class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="">— Seleccionar curso —</option>
+            {% for c in cursos %}
+            <option value="{{ c.pk }}">{{ c.nombre }} — {{ c.periodo }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="button" onclick="descargarActa()"
+                class="w-full bg-orange-500 text-white py-2.5 rounded-xl hover:bg-orange-600 transition-colors font-medium text-sm">
+          <i class="fas fa-download mr-2"></i>Descargar Acta PDF
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ── Reporte Excel ──────────────────────────────────────────────── -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:col-span-2">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+        <i class="fas fa-file-excel text-green-600 text-lg"></i>
+      </div>
+      <div>
+        <h2 class="font-semibold text-gray-800">Reporte Excel</h2>
+        <p class="text-xs text-gray-500">Notas y asistencia con filtros — incluye dos hojas</p>
+      </div>
+    </div>
+
+    <form method="get" action="{% url 'reporte-excel' %}">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Desde</label>
+          <input type="date" name="desde"
+                 class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Hasta</label>
+          <input type="date" name="hasta"
+                 class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Materia</label>
+          <select name="materia"
+                  class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="">Todas</option>
+            {% for m in materias %}
+            <option value="{{ m.pk }}">{{ m.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Curso</label>
+          <select name="curso"
+                  class="w-full px-3 py-2 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <option value="">Todos</option>
+            {% for c in cursos %}
+            <option value="{{ c.pk }}">{{ c.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <button type="submit"
+              class="bg-green-600 text-white px-6 py-2.5 rounded-xl hover:bg-green-700 transition-colors font-medium text-sm">
+        <i class="fas fa-download mr-2"></i>Descargar Excel
+      </button>
+    </form>
+  </div>
+
+</div>
+
+<script>
+function descargarBoletin() {
+  const id = document.getElementById('sel-estudiante').value;
+  if (!id) { alert('Selecciona un estudiante.'); return; }
+  const form = document.getElementById('form-boletin');
+  const desde = form.querySelector('[name=desde]').value;
+  const hasta  = form.querySelector('[name=hasta]').value;
+  let url = `/reports/boletin/${id}/pdf/?`;
+  if (desde) url += `desde=${desde}&`;
+  if (hasta)  url += `hasta=${hasta}`;
+  window.location.href = url;
+}
+
+function descargarActa() {
+  const id = document.getElementById('sel-curso-acta').value;
+  if (!id) { alert('Selecciona un curso.'); return; }
+  window.location.href = `/reports/acta/${id}/pdf/`;
+}
+</script>
+{% endblock %}
